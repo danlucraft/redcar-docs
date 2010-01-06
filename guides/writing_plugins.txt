@@ -46,52 +46,51 @@ can copy and paste this one and fill in the blanks:
 	start_dependencies: 
 	  redcar: "*"
 
-The first few of these are self-explanatory. `autoload` can be set to `false` and your plugin will not be loaded. 
+The first few of these are self-explanatory. `autoload` can be set to `false` and 
+your plugin will not be loaded. 
 
-The name should be a gem-style name ("wiki", "maximum_macros") as Redcar will use the name to add `myplugin/lib/` to the Ruby load path and then require the file `myplugin`. 
+The name should be a gem-style name ("wiki", "maximum_macros") as Redcar will use 
+the name to add `myplugin/lib/` to the Ruby load path and then require the file 
+`myplugin`. 
 
-It will expect that file to define the class or module `MyPlugin` as specified in `startup_module`. (You will see later that that module can define method hooks to run on load or startup.)
+It will expect that file to define the class or module `MyPlugin` as specified in 
+`startup_module`. (You will see later that that module can define method hooks to 
+run on load or startup.)
 
-The two properties `load_dependencies` and `start_dependencies` specify which plugins must be loaded or started before your plugin is loaded or started.  `redcar` is a good default for both of these, as it says the plugin depends upon all the standard Redcar plugins.
+The two properties `load_dependencies` and `start_dependencies` specify which 
+plugins must be loaded or started before your plugin is loaded or started.  
+`redcar` is a good default for both of these, as it says the plugin depends upon 
+all the standard Redcar plugins.
 
-Other than what's already stated, there are no special code loading requirements as in Rails. Your code will need to require all Ruby files it needs explicitly.
+Other than what's already stated, there are no special code loading requirements 
+as in Rails. Your code will need to require all Ruby files it needs explicitly.
 
 Commands
 --------
 
 In Redcar commands are subclasses of `Redcar::Command`. 
 
-Here's one that strips all whitespace from the ends of lines in the current buffer:
+Here's one that strips all whitespace from the ends of lines in the current 
+buffer:
 
-  class StripWhitespaceCommand < Redcar::Command
-    def execute
-      # TODO: finish me!!
-    end
-  end
+   class StripWhitespaceCommand < Redcar::EditTabCommand
+   
+     def execute
+       0.upto(doc.line_count - 1) do |line_ix|
+         doc.replace_line(line_ix) {|line| line.strip }
+       end
+     end
+   end
+    
+This makes use of methods on the Document class to manipulate the text in the edit 
+tab.
 
-# TODO: link to Document docs.
-This makes use of methods on the Document class to manipulate the text in the edit tab.
-
-To put this command into a menu, and give it a keybinding, you can do:
-
-  class StripWhitespaceCommand < Redcar::Command
-    menu "Text|Strip Whitespace"
-    key :linux => "Ctrl+S",
-        :win => "Ctrl+S",
-        :osx => "Cmd+S"
-        
-    def execute
-      # elided...
-    end
-  end
-
-Stripping whitespace only makes sense if the user has an edit tab open. When the user has no edit tabs open the command should be greyed out in the menus. If you change the class definition, Redcar will handle greying out and activating the command for you:
-
-  class StripWhitespaceCommand < Redcar::EditTabCommand
 
 DocumentMirrors
 ---------------
 
-The EditView displays the contents of the Document, which is the in-memory representation of the text in your tab. You can use the API of the Document to manipulate the in
+The EditView displays the contents of the Document, which is the in-memory 
+representation of the text in your tab. You can use the API of the Document to 
+manipulate the in
 
 
